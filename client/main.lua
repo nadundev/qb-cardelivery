@@ -66,10 +66,10 @@ CreateThread(function()
                 end
 
                 if deliveryZone:isPointInside(playerCoords) then
+                    DrawText3D(Config.DeliveryLocation.x, Config.DeliveryLocation.y, Config.DeliveryLocation.z, 'Press ~g~E~w~ to deliver the car')
                     if deliveryMarker == nil then
                         deliveryMarker = CreateMarker(Config.DeliveryMarkerType, Config.DeliveryLocation, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.DeliveryMarkerScale.x, Config.DeliveryMarkerScale.y, Config.DeliveryMarkerScale.z, Config.DeliveryMarkerColor.r, Config.DeliveryMarkerColor.g, Config.DeliveryMarkerColor.b, Config.DeliveryMarkerColor.a, false, true, 2, false, false, false, false)
                     end
-                    DrawText3D(Config.DeliveryLocation.x, Config.DeliveryLocation.y, Config.DeliveryLocation.z, 'Press ~g~E~w~ to deliver the car')
                     if IsControlJustReleased(0, 38) then
                         QBCore.Functions.DeleteVehicle(currentVehicle)
                         RemoveBlip(deliveryBlip)
