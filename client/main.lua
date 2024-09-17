@@ -5,27 +5,13 @@ local blip = nil
 local deliveryZone = nil
 local carBlip = nil
 local deliveryBlip = nil
-local deliveryMarker = nil
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    local payPhoneBlip = AddBlipForCoord(Config.PayPhoneLocation)
-    SetBlipSprite(payPhoneBlip, 285)
-    SetBlipDisplay(payPhoneBlip, 4)
-    SetBlipScale(payPhoneBlip, 0.6)
-    SetBlipColour(payPhoneBlip, 5)
-    SetBlipAsShortRange(payPhoneBlip, true)
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString("Exotic Car Steal")
-    EndTextCommandSetBlipName(payPhoneBlip)
-
-    deliveryZone = BoxZone:Create(
-        Config.DeliveryLocation,
-        Config.DeliveryZoneRadius, Config.DeliveryZoneRadius, {
-            name = "qb-exoticcarsteal_delivery_zone",
-            heading = 0.0,
-            debugPoly = false
-        }
-    )
+    deliveryZone = BoxZone:Create(Config.DeliveryLocation, Config.DeliveryZoneRadius, Config.DeliveryZoneRadius, {
+        name = "qb-exoticcarsteal_delivery_zone",
+        heading = 0.0,
+        debugPoly = false
+    })
 end)
 
 CreateThread(function()
@@ -33,17 +19,6 @@ CreateThread(function()
         local sleep = 1000
         local playerPed = PlayerPedId()
         local playerCoords = GetEntityCoords(playerPed)
-        local payPhoneDistance = #(playerCoords - Config.PayPhoneLocation)
-
-        if payPhoneDistance < 2.0 then
-            sleep = 0
-            if not isInMission then
-                DrawText3D(Config.PayPhoneLocation.x, Config.PayPhoneLocation.y, Config.PayPhoneLocation.z, 'Press ~g~E~w~ to start the mission')
-                if IsControlJustReleased(0, 38) then
-                    StartMission()
-                end
-            end
-        end
 
         if isInMission then
             sleep = 0
@@ -67,24 +42,16 @@ CreateThread(function()
 
                 if deliveryZone:isPointInside(playerCoords) then
                     DrawText3D(Config.DeliveryLocation.x, Config.DeliveryLocation.y, Config.DeliveryLocation.z, 'Press ~g~E~w~ to deliver the car')
-                    if deliveryMarker == nil then
-                        deliveryMarker = CreateMarker(Config.DeliveryMarkerType, Config.DeliveryLocation, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.DeliveryMarkerScale.x, Config.DeliveryMarkerScale.y, Config.DeliveryMarkerScale.z, Config.DeliveryMarkerColor.r, Config.DeliveryMarkerColor.g, Config.DeliveryMarkerColor.b, Config.DeliveryMarkerColor.a, false, true, 2, false, false, false, false)
-                    end
                     if IsControlJustReleased(0, 38) then
                         QBCore.Functions.DeleteVehicle(currentVehicle)
                         RemoveBlip(deliveryBlip)
                         deliveryBlip = nil
-                        deliveryMarker = nil
                         TriggerServerEvent('qb-exoticcarsteal:server:PayPlayer')
                         QBCore.Functions.Notify('Mission completed! You received $' .. Config.PaymentAmount .. ' for delivering the exotic car.', 'success')
                         isInMission = false
                         currentVehicle = nil
                         blip = nil
                         carBlip = nil
-                    end
-                else
-                    if deliveryMarker ~= nil then
-                        deliveryMarker = nil
                     end
                 end
             end
