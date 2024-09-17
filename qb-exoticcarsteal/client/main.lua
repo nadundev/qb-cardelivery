@@ -49,15 +49,19 @@ CreateThread(function()
             local playerVehicle = GetVehiclePedIsIn(playerPed, false)
 
             if playerVehicle == currentVehicle then
-                if not IsPedInAnyVehicle(playerPed, false) then
-                    RemoveBlip(carBlip)
-                    deliveryBlip = AddBlipForCoord(Config.DeliveryLocation)
-                    SetBlipSprite(deliveryBlip, 501)
-                    SetBlipColour(deliveryBlip, 5)
-                    SetBlipRoute(deliveryBlip, true)
-                    BeginTextCommandSetBlipName("STRING")
-                    AddTextComponentString("Delivery Location")
-                    EndTextCommandSetBlipName(deliveryBlip)
+                if IsPedInAnyVehicle(playerPed, false) then
+                    if deliveryBlip == nil then
+                        deliveryBlip = AddBlipForCoord(Config.DeliveryLocation)
+                        SetBlipSprite(deliveryBlip, 501)
+                        SetBlipColour(deliveryBlip, 5)
+                        SetBlipRoute(deliveryBlip, true)
+                        BeginTextCommandSetBlipName("STRING")
+                        AddTextComponentString("Delivery Location")
+                        EndTextCommandSetBlipName(deliveryBlip)
+                    end
+                else
+                    RemoveBlip(deliveryBlip)
+                    deliveryBlip = nil
                 end
 
                 if deliveryZone:isPointInside(playerCoords) then
@@ -66,6 +70,7 @@ CreateThread(function()
                         QBCore.Functions.DeleteVehicle(currentVehicle)
                         RemoveBlip(deliveryBlip)
                         TriggerServerEvent('qb-exoticcarsteal:server:PayPlayer')
+                        QBCore.Functions.Notify('Mission completed! You received $' .. Config.PaymentAmount .. ' for delivering the exotic car.', 'success')
                         isInMission = false
                         currentVehicle = nil
                         blip = nil
