@@ -5,6 +5,7 @@ local blip = nil
 local deliveryZone = nil
 local carBlip = nil
 local deliveryBlip = nil
+local deliveryMarker = nil
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     local payPhoneBlip = AddBlipForCoord(Config.PayPhoneLocation)
@@ -65,10 +66,14 @@ CreateThread(function()
                 end
 
                 if deliveryZone:isPointInside(playerCoords) then
+                    if deliveryMarker == nil then
+                        deliveryMarker = CreateMarker(Config.DeliveryMarkerType, Config.DeliveryLocation, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Config.DeliveryMarkerScale.x, Config.DeliveryMarkerScale.y, Config.DeliveryMarkerScale.z, Config.DeliveryMarkerColor.r, Config.DeliveryMarkerColor.g, Config.DeliveryMarkerColor.b, Config.DeliveryMarkerColor.a, false, true, 2, false, false, false, false)
+                    end
                     DrawText3D(Config.DeliveryLocation.x, Config.DeliveryLocation.y, Config.DeliveryLocation.z, 'Press ~g~E~w~ to deliver the car')
                     if IsControlJustReleased(0, 38) then
                         QBCore.Functions.DeleteVehicle(currentVehicle)
                         RemoveBlip(deliveryBlip)
+                        RemoveMarker(deliveryMarker)
                         TriggerServerEvent('qb-exoticcarsteal:server:PayPlayer')
                         QBCore.Functions.Notify('Mission completed! You received $' .. Config.PaymentAmount .. ' for delivering the exotic car.', 'success')
                         isInMission = false
@@ -76,6 +81,7 @@ CreateThread(function()
                         blip = nil
                         carBlip = nil
                         deliveryBlip = nil
+                        deliveryMarker = nil
                     end
                 end
             end
@@ -117,10 +123,12 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
         QBCore.Functions.DeleteVehicle(currentVehicle)
         RemoveBlip(carBlip)
         RemoveBlip(deliveryBlip)
+        RemoveMarker(deliveryMarker)
         isInMission = false
         currentVehicle = nil
         blip = nil
         carBlip = nil
         deliveryBlip = nil
+        deliveryMarker = nil
     end
 end)
