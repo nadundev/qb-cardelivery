@@ -73,14 +73,17 @@ CreateThread(function()
                     if IsControlJustReleased(0, 38) then
                         QBCore.Functions.DeleteVehicle(currentVehicle)
                         RemoveBlip(deliveryBlip)
-                        RemoveMarker(deliveryMarker)
+                        deliveryBlip = nil
+                        deliveryMarker = nil
                         TriggerServerEvent('qb-exoticcarsteal:server:PayPlayer')
                         QBCore.Functions.Notify('Mission completed! You received $' .. Config.PaymentAmount .. ' for delivering the exotic car.', 'success')
                         isInMission = false
                         currentVehicle = nil
                         blip = nil
                         carBlip = nil
-                        deliveryBlip = nil
+                    end
+                else
+                    if deliveryMarker ~= nil then
                         deliveryMarker = nil
                     end
                 end
@@ -123,12 +126,11 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
         QBCore.Functions.DeleteVehicle(currentVehicle)
         RemoveBlip(carBlip)
         RemoveBlip(deliveryBlip)
-        RemoveMarker(deliveryMarker)
+        deliveryBlip = nil
+        deliveryMarker = nil
         isInMission = false
         currentVehicle = nil
         blip = nil
         carBlip = nil
-        deliveryBlip = nil
-        deliveryMarker = nil
     end
 end)
